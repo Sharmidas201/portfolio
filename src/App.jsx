@@ -4,12 +4,13 @@ import "./App.css";
 const projectImages = {
   rag: new URL("../rag-billing.png", import.meta.url).href,
   entropy: new URL("../entropy-biomarkers.png", import.meta.url).href,
-  jewelry: new URL("../jewelry-genai.png", import.meta.url).href,
+  jewelry: new URL("../src/jewellery.jpeg", import.meta.url).href,
   stroke: new URL("../stroke-pipeline.png", import.meta.url).href,
   energy: new URL("../energy-consumption.png", import.meta.url).href,
   timeseries: new URL("../timeseries-forecast.png", import.meta.url).href,
   alzheimer: new URL("../alzheimer-cnn.png", import.meta.url).href,
   global: new URL("../global-disease-burden.png", import.meta.url).href,
+  hackathon: new URL("../src/hackathon.jpeg", import.meta.url).href,
 };
 
 const projects = [
@@ -19,7 +20,9 @@ const projects = [
     summary:
       "Built an LSTM-based prediction pipeline reaching 95% accuracy and earned research funding for clinical impact.",
     tags: ["LSTM", "Healthcare", "Time Series"],
-    image: projectImages.timeseries,
+    image: projectImages.hackathon,
+    imageFit: "contain",
+    imagePosition: "center",
     details: [
       "LSTM model for seizure prediction with 95% accuracy.",
       "Secured $5,100 funding for clinical impact potential.",
@@ -89,6 +92,8 @@ const projects = [
       "Built GAN/VAE/diffusion prototypes to reduce jewelry design iteration time by ~40%.",
     tags: ["Generative AI", "Diffusion", "Creative Tools"],
     image: projectImages.jewelry,
+    imageFit: "cover",
+    imagePosition: "center",
     link:
       "https://github.com/Sharmidas201/GenAI-Fashion-ring-design/blob/main/Spherica_stablediffusion.ipynb",
     details: [
@@ -250,8 +255,14 @@ const tools = [
   { name: "PyTorch", accent: "#f4a7a2" },
   { name: "TensorFlow", accent: "#f6c28b" },
   { name: "LangChain", accent: "#b7d7e8" },
+  { name: "NLP", accent: "#f0c4a6" },
+  { name: "Bayesian Stats", accent: "#d9c6f2" },
   { name: "SQL", accent: "#f2b5d4" },
   { name: "PySpark", accent: "#f7d694" },
+  { name: "Hadoop", accent: "#d7e8b4" },
+  { name: "HDFS", accent: "#f4d8a8" },
+  { name: "Kibana", accent: "#b7d7e8" },
+  { name: "Excel", accent: "#c9e6d8" },
   { name: "AWS", accent: "#f4b9a0" },
   { name: "GCP", accent: "#bfe3d0" },
   { name: "Azure", accent: "#b9d2f0" },
@@ -531,6 +542,10 @@ export default function App() {
                       src={project.image}
                       alt={project.title}
                       loading="lazy"
+                      style={{
+                        objectFit: project.imageFit || "cover",
+                        objectPosition: project.imagePosition || "center",
+                      }}
                     />
                   </div>
                   <div className="placard-title">
