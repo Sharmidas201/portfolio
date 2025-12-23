@@ -236,17 +236,18 @@ const education = [
   {
     degree: "MSc, Data Science & Analytics",
     school: "Toronto Metropolitan University",
-    details: "Vector Scholarship in AI, Hack the World Hackathon Winner",
+    details:
+      "Vector Scholarship in AI, Hack the World Hackathon Winner · GPA: 4.28/4.33",
   },
   {
     degree: "Graduate Certificate, AI & Machine Learning",
     school: "Humber College",
-    details: "Dean's Honour List",
+    details: "Dean's Honour List · Grade: 92.5%",
   },
   {
     degree: "BTech, Computer Science & Engineering",
     school: "Future Institute of Technology",
-    details: "Kolkata",
+    details: "CGPA: 9.2/10",
   },
 ];
 
@@ -308,7 +309,12 @@ export default function App() {
   const [audience, setAudience] = useState("recruiter");
   const [introOpen, setIntroOpen] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
   const currentAudience = useMemo(() => audienceCopy[audience], [audience]);
+  const panelLink =
+    audience === "recruiter"
+      ? { href: "/resume.pdf", download: true }
+      : { href: "#contact", download: false };
 
   useEffect(() => {
     const elements = document.querySelectorAll("[data-reveal]");
@@ -328,8 +334,45 @@ export default function App() {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    const sections = document.querySelectorAll("main section[id]");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      { rootMargin: "-30% 0px -60% 0px", threshold: 0 }
+    );
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const updateProgress = () => {
+      const total = document.body.scrollHeight - window.innerHeight;
+      const progress = total > 0 ? (window.scrollY / total) * 100 : 0;
+      document.documentElement.style.setProperty(
+        "--scroll-progress",
+        `${progress}%`
+      );
+    };
+    updateProgress();
+    window.addEventListener("scroll", updateProgress, { passive: true });
+    window.addEventListener("resize", updateProgress);
+    return () => {
+      window.removeEventListener("scroll", updateProgress);
+      window.removeEventListener("resize", updateProgress);
+    };
+  }, []);
+
   return (
     <div className="page">
+      <div className="scroll-indicator">
+        <span className="scroll-label">Scroll</span>
+      </div>
       {introOpen && (
         <div className="intro-screen">
           <div className="intro-card">
@@ -382,12 +425,15 @@ export default function App() {
         </p>
         <div className="drawer-grid">
           {tools.map((tool) => (
-            <div key={tool.name} className="tool-chip">
+            <div key={tool.name} className="tool-chip tooltip-item">
               <span
                 className="tool-dot"
                 style={{ background: tool.accent }}
               />
               {tool.name}
+              <span className="tooltip-bubble">
+                {tool.name} in production or academic workflows.
+              </span>
             </div>
           ))}
         </div>
@@ -395,12 +441,42 @@ export default function App() {
       <header className="site-header">
         <div className="logo">SD</div>
         <nav className="nav">
-          <a href="#home">Home</a>
-          <a href="#projects">Projects</a>
-          <a href="#experience">Experience</a>
-          <a href="#skills">Skills</a>
-          <a href="#education">Education</a>
-          <a href="#contact">Contact</a>
+          <a
+            href="#home"
+            className={activeSection === "home" ? "active" : ""}
+          >
+            Home
+          </a>
+          <a
+            href="#projects"
+            className={activeSection === "projects" ? "active" : ""}
+          >
+            Projects
+          </a>
+          <a
+            href="#experience"
+            className={activeSection === "experience" ? "active" : ""}
+          >
+            Experience
+          </a>
+          <a
+            href="#skills"
+            className={activeSection === "skills" ? "active" : ""}
+          >
+            Skills
+          </a>
+          <a
+            href="#education"
+            className={activeSection === "education" ? "active" : ""}
+          >
+            Education
+          </a>
+          <a
+            href="#contact"
+            className={activeSection === "contact" ? "active" : ""}
+          >
+            Contact
+          </a>
         </nav>
         <div className="nav-actions">
           <button
@@ -424,7 +500,7 @@ export default function App() {
               roles
             </p>
             <h1>
-              Sharmi Das builds{" "}
+              Sharmi builds{" "}
               <span className="hero-dynamic">adaptive AI systems</span> for
               healthcare, analytics, and language intelligence.
             </h1>
@@ -432,6 +508,9 @@ export default function App() {
               Machine learning, data science, and analytics builder with hands-on
               experience in NLP, RAG, and predictive modeling. Comfortable taking
               models from idea to deployment-ready pipelines.
+            </p>
+            <p className="hero-note">
+              Vector Scholarship in AI recipient · Hack the World Hackathon winner
             </p>
             <div className="hero-actions">
               <a className="primary" href="#projects">
@@ -442,27 +521,11 @@ export default function App() {
                 className="ghost"
                 onClick={() => setDrawerOpen(true)}
               >
-                View Tools
+                View My Skillset
               </button>
               <a className="ghost" href="#contact">
                 Contact Me
               </a>
-            </div>
-            <div className="hero-meta">
-              <div>
-                <div>
-                  <span className="meta-label">Location</span>
-                  <span>Toronto, ON (Remote Canada)</span>
-                </div>
-              </div>
-              <div>
-                <span className="meta-label">Focus</span>
-                <span>Healthcare AI, NLP, RAG, MLOps</span>
-              </div>
-              <div>
-                <span className="meta-label">Availability</span>
-                <span>Open to new roles</span>
-              </div>
             </div>
           </div>
           <div className="hero-panel">
@@ -498,7 +561,11 @@ export default function App() {
                 <p className="panel-flag">{currentAudience.headline}</p>
                 <h3>{currentAudience.title}</h3>
                 <p>{currentAudience.body}</p>
-                <a className="panel-link" href="#contact">
+                <a
+                  className="panel-link"
+                  href={panelLink.href}
+                  download={panelLink.download || undefined}
+                >
                   {currentAudience.cta}
                 </a>
               </div>
@@ -516,6 +583,19 @@ export default function App() {
                 <h4>40%</h4>
                 <p>Design iteration time reduced</p>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="status-static" aria-label="Current focus">
+          <div className="status-card">
+            <div>
+              <span className="meta-label">Currently Working On</span>
+              <p>Research Assistant: AI chatbot qualitative study</p>
+            </div>
+            <div>
+              <span className="meta-label">Open To</span>
+              <p>Full-time or contract opportunities</p>
             </div>
           </div>
         </section>
@@ -630,7 +710,12 @@ export default function App() {
                 <h3>{skill.group}</h3>
                 <ul>
                   {skill.items.map((item) => (
-                    <li key={item}>{item}</li>
+                    <li key={item} className="tooltip-item">
+                      {item}
+                      <span className="tooltip-bubble">
+                        {item} applied in projects and research work.
+                      </span>
+                    </li>
                   ))}
                 </ul>
               </div>
